@@ -5,7 +5,9 @@ internal static class WorkDayCalculator
 {
     internal static WorkDayCalcResult Calculate(Arguments arguments)
     {
-        throw new NotImplementedException();
+        var totalHours = (arguments.End - arguments.Start - arguments.Lunch).TotalHours;
+
+        return new(totalHours, arguments.MainProjectLabel);
     }
 
 }
