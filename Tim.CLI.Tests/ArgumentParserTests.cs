@@ -40,4 +40,63 @@ public class ArgumentParserTests
 
         Assert.That(arguments.WorkDayHours, Is.EqualTo(8.0));
     }
+
+    #region FlexFlags
+
+    [Test]
+    public void Parse_HandlesOnePositiveFlex()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.FlexHours, Is.EqualTo(TimeSpan.FromHours(0.75)));
+    }
+
+    [Test]
+    public void Parse_HandlesTwoPositiveFlex()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "0.5" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.FlexHours, Is.EqualTo(TimeSpan.FromHours(1.25)));
+    }
+
+    [Test]
+    public void Parse_HandlesTwoDifferentFlex()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "-0.5" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.FlexHours, Is.EqualTo(TimeSpan.FromHours(0.25)));
+    }
+
+    [Test]
+    public void Parse_HandlesThreeoDifferentFlex()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "-0.5", "-f", "2" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.FlexHours, Is.EqualTo(TimeSpan.FromHours(2.25)));
+    }
+
+    #endregion FlexFlags
+
+    #region CombinedCases
+
+    [Test]
+    public void Parse_HandlesTwoFlexFlagsAndOneWorkDayFlag()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-b", "6", "-f", "-1.5" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.FlexHours, Is.EqualTo(TimeSpan.FromHours(-0.75)));
+        Assert.That(arguments.WorkDayHours, Is.EqualTo(6.0));
+    }
+
+    #endregion CombinedCases
 }
