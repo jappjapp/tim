@@ -1,2 +1,6 @@
 ﻿namespace Tim.CLI.Models;
-internal record WorkDayCalcResult(double totalHours, string mainLabel);
+internal record WorkDayCalcResult(
+    double TotalHours,
+    string MainLabel,
+    double Flex
+);

@@ -1,30 +1,59 @@
 ﻿using System.Collections.Immutable;
 using Tim.CLI.Models;
 
-namespace Tim.CLI.Business;
-internal static class ArgumentHandler
+namespace Tim.CLI.Business
 {
-    internal static Arguments Parse(ImmutableArray<string> args)
+    internal static class ArgumentHandler
     {
-        // Start with:
-        // 0800 1700 0.5 Label
+        private const double DefaultWorkDayHours = 8.0;
+        private const string WorkDayHoursFlag = "-b";
+        private const string FlexFlag = "-f";
 
-        var start = TimeOnly.Parse(args[0].Insert(2, ":"));
-        var end = TimeOnly.Parse(args[1].Insert(2, ":"));
-        var lunch = TimeSpan.FromHours(double.Parse(args[2]));
-        var label = args[3];
+        internal static Arguments Parse(ImmutableArray<string> args)
+        {
+            var start = TimeOnly.Parse(args[0].Insert(2, ":"));
+            var end = TimeOnly.Parse(args[1].Insert(2, ":"));
+            var lunch = TimeSpan.FromHours(double.Parse(args[2].Replace(".", ",")));
+            var label = args[3];
 
-        return new(start, end, lunch, label);
+            var workDayHours = GetArgumentValueOrDefault(WorkDayHoursFlag, DefaultWorkDayHours, args);
 
-        // Later:
-        // $ tim 0700 1800 0.5 MainProjectName -n 1 --OtherProjectName 2.5 -n 0.5 +m 1 ++OtherProjectName 2
-        // [12 T | 7.5 main | 4.5 other | 5 F + ]
-        // start, end, lunch, mainprojectlabel
-        // key value list of enum and hour
-    }
+            return new(start, end, lunch, label, workDayHours);
 
-    internal static List<string> Validate(ImmutableArray<string> args)
-    {
-        throw new NotImplementedException();
+            // Later:
+            // $ tim 0700 1800 0.5 MainProjectName -f 1 -f -3 --ProjectName 2.5 -b 7
+
+            // start, end, lunch, mainprojectlabel
+            // project hours: key value list of namestring and hour
+            // flex hours: double
+            // basehour: double
+        }
+
+        internal static List<string> Validate(ImmutableArray<string> args)
+        {
+            // Missing required
+
+            // Double of unique, like base
+
+            // Unknown parameters
+
+            // Missing parameters (can't have two qualifiers or two datas in a row)
+
+            // Non-valid times
+
+            throw new NotImplementedException();
+        }
+
+        private static double GetArgumentValueOrDefault(string argumentFlag, double defaultValue, ImmutableArray<string> arguments)
+        {
+            if (!arguments.Contains(argumentFlag))
+            {
+                return defaultValue;
+            }
+
+            string unparsedValue = arguments[arguments.IndexOf(argumentFlag) + 1];
+
+            return double.Parse(unparsedValue);
+        }
     }
 }
