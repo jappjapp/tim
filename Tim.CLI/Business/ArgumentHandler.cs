@@ -8,6 +8,7 @@ namespace Tim.CLI.Business
         private const double DefaultWorkDayHours = 8.0;
         private const string WorkDayHoursFlag = "-b";
         private const string FlexFlag = "-f";
+        private const string ProjectFlagPrefix = "--";
 
         internal static Arguments Parse(ImmutableArray<string> args)
         {
@@ -20,12 +21,9 @@ namespace Tim.CLI.Business
 
             var flexHours = GetFlexHours(FlexFlag, args);
 
-            return new(start, end, lunch, label, workDayHours, flexHours);
+            var projectHours = GetProjectHours(ProjectFlagPrefix, args);
 
-            // Later:
-            // $ tim 0700 1800 0.5 MainProjectName -f 1 -f -3 --ProjectName 2.5 -b 7
-
-            // project hours: key value list of namestring and hour
+            return new(start, end, lunch, label, workDayHours, flexHours, projectHours);
         }
 
         internal static List<string> Validate(ImmutableArray<string> args)
@@ -39,6 +37,8 @@ namespace Tim.CLI.Business
             // Missing parameters (can't have two qualifiers or two datas in a row)
 
             // Non-valid times
+
+            // only double dash, no project name
 
             throw new NotImplementedException();
         }
@@ -70,6 +70,29 @@ namespace Tim.CLI.Business
             }
 
             return TimeSpan.FromHours(flexHours);
+        }
+        
+        private static Dictionary<string, double> GetProjectHours(string projectFlagPrefix, ImmutableArray<string> args)
+        {
+            Dictionary<string, double> projectHours = new();
+            var mutableArgs = args.ToList();
+
+            while (mutableArgs.Any(a => a.StartsWith(projectFlagPrefix)))
+            {
+                var projectIndex = mutableArgs.IndexOf(mutableArgs.First(a => a.StartsWith(projectFlagPrefix)));
+                var projectName = mutableArgs[projectIndex].Remove(0, projectFlagPrefix.Length);
+                var projectValue = double.Parse(mutableArgs[projectIndex + 1].Replace(".", ","));
+
+                if (!projectHours.TryAdd(projectName, projectValue))
+                {
+                    projectHours[projectName] += projectValue;
+                }
+
+                mutableArgs.RemoveRange(projectIndex, 2);
+            }
+
+            return projectHours;
+
         }
     }
 }

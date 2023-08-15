@@ -19,6 +19,13 @@ public class Program
 
         var result = WorkDayCalculator.Calculate(parsedArgs);
 
+        var resultErrors = WorkDayCalculator.Validate(result);
+        if (resultErrors.Any())
+        {
+            Console.WriteLine(ResultFormatter.FormatErrorsToLineString(resultErrors));
+            return;
+        }
+
         var formattedResult = ResultFormatter.FormatResultToLineString(result);
 
         Console.WriteLine(formattedResult);

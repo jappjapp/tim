@@ -74,7 +74,7 @@ public class ArgumentParserTests
     }
 
     [Test]
-    public void Parse_HandlesThreeoDifferentFlex()
+    public void Parse_HandlesThreeDifferentFlex()
     {
         var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "-0.5", "-f", "2" }.ToImmutableArray();
 
@@ -84,6 +84,72 @@ public class ArgumentParserTests
     }
 
     #endregion FlexFlags
+
+    #region ProjectFlags
+
+    [Test]
+    public void Parse_HandlesOneProjectFlag()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "--MockProject1", "2.75" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.ProjectHours, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments.ProjectHours.First().Key, Is.EqualTo("MockProject1"));
+            Assert.That(arguments.ProjectHours.First().Value, Is.EqualTo(2.75));
+        });
+    }
+
+    [Test]
+    public void Parse_HandlesThreeProjectFlags()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label",
+            "--MockProject1", "1.75",
+            "--MockProject2", "2.75",
+            "--MockProject3", "3.75"
+        }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.ProjectHours, Has.Count.EqualTo(3));
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments.ProjectHours.First().Key, Is.EqualTo("MockProject1"));
+            Assert.That(arguments.ProjectHours.First().Value, Is.EqualTo(1.75));
+
+            Assert.That(arguments.ProjectHours.Skip(1).First().Key, Is.EqualTo("MockProject2"));
+            Assert.That(arguments.ProjectHours.Skip(1).First().Value, Is.EqualTo(2.75));
+
+            Assert.That(arguments.ProjectHours.Last().Key, Is.EqualTo("MockProject3"));
+            Assert.That(arguments.ProjectHours.Last().Value, Is.EqualTo(3.75));
+        });
+    }
+
+    [Test]
+    public void Parse_HandlesDuplicateProjectFlags()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label",
+            "--MockProject1", "1.75",
+            "--MockProject2", "2.75",
+            "--MockProject1", "-0.75"
+        }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.ProjectHours, Has.Count.EqualTo(2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments.ProjectHours.First().Key, Is.EqualTo("MockProject1"));
+            Assert.That(arguments.ProjectHours.First().Value, Is.EqualTo(1));
+
+            Assert.That(arguments.ProjectHours.Last().Key, Is.EqualTo("MockProject2"));
+            Assert.That(arguments.ProjectHours.Last().Value, Is.EqualTo(2.75));
+        });
+    }
+
+    #endregion ProjectFlags
 
     #region CombinedCases
 
