@@ -27,24 +27,17 @@ dotnet tool install --global --add-source ./nupkg Tim.CLI
 Once installed as a global tool, the program is executed by the name `tim`, as specified by the relevant csproj setting.
 
 ```
-$ tim 0700 1800 0.5 MainProjectName -n 1 --OtherProjectName 2.5 -n 0.5 +m 1 ++OtherProjectName 2
-[12 T | 7.5 main | 4.5 other | 5 F+ ]
+$ tim 0700 1800 0.5 MainProject -f -1 --OtherProject 2.5 ++Training 2 ++MainProject 0.5 -b 7
+[12 T | MainProject 7.5 | OtherProject 2.5 | Training 2 | Flex 5 ]
 ```
-Above means:
-- You've worked from 07:00 to 18:00, with 0.5 hour lunch
-	- Put all time towards "MainProjectName", but deduct the following
-		- Negative flex (-n), 1 + 0.5 = 1.5 hours.
-		- Other projects (--ProjectName), here 2.5 hours for "OtherProjectName".
-- Any additional time outside of 07:00 to 18:00 use + sign for arguments
-	- Towards main project (+m). Here 1 hour
-	- Towards other projects (++ProjectName), here 2 hours
-- Positive flex is calculated when total is more than 8 hours. This baseline work day length can be set with argument -b and defaults to 8 hours.
 
-In this example, output should be  
-11 - 0.5L - 1n - 0.5n + 1m + 2OtherProjectName  
-Total 12 hours  
-baseline 7 gives 12 - 7 = 5 hours flexplus  
-11 - 0.5L - 1n - 0.5n + 1m - 2.5Other = 7.5 main  
-2.5 + 2 = 4.5 other  
+Above means:
+- You've worked from 07:00 to 18:00, with 0.5 hour lunch, mainly billing towards MainProject.
+- During the day, you took one hour from your flex-account (-f -1) instead of working towards the MainProject.
+- During the day, you worked 2.5 hours which should be billed towards OtherProject instead of MainProject (--OtherProject 2.5)
+- After 18:00, you did 2 hours of Training, which should not be deducted from the MainProject hours, but which should add towards your flex-account
+- After 18:00, you worked half an hours towards the MainProject (++MainProject 0.5), which should also add towards your flex-account
+- The basis for flex calculations is the workday length, which defaults to 8 hours but is in this case manually overridden to 7 hours (-b 7)
+- The output states that you worked 12 hours total, of which 7.5 hours should be billed towards MainProject, 2.5 hours towards OtherProject, 2 hours should be reported as Training. This workday yielded 5 hours towards the flex account.
 
 See unit tests for more examples.

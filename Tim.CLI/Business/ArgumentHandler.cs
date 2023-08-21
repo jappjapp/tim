@@ -8,7 +8,8 @@ namespace Tim.CLI.Business
         private const double DefaultWorkDayHours = 8.0;
         private const string WorkDayHoursFlag = "-b";
         private const string FlexFlag = "-f";
-        private const string ProjectFlagPrefix = "--";
+        private const string ProjectsDuringWorkdayFlagPrefix = "--";
+        private const string ProjectsOutsideWorkdayFlagPrefix = "++";
 
         internal static Arguments Parse(ImmutableArray<string> args)
         {
@@ -21,9 +22,10 @@ namespace Tim.CLI.Business
 
             var flexHours = GetFlexHours(FlexFlag, args);
 
-            var projectHours = GetProjectHours(ProjectFlagPrefix, args);
+            var projectHoursDuringWorkday = GetProjectHours(ProjectsDuringWorkdayFlagPrefix, args);
+            var projectHoursOutsideWorkday = GetProjectHours(ProjectsOutsideWorkdayFlagPrefix, args);
 
-            return new(start, end, lunch, label, workDayHours, flexHours, projectHours);
+            return new(start, end, lunch, label, workDayHours, flexHours, projectHoursDuringWorkday, projectHoursOutsideWorkday);
         }
 
         internal static List<string> Validate(ImmutableArray<string> args)

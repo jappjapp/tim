@@ -24,13 +24,13 @@ internal static class WorkDayCalculator
     {
         Dictionary<string, double> specifiedHours = new();
 
-        foreach (var project in arguments.ProjectHours)
+        foreach (var project in arguments.ProjectHoursDuringWorkday)
         {
             specifiedHours[project.Key] = project.Value;
         }
 
         // Hours that are unaccounted for by specified projects are allocated towards the main project
-        var projectSum = arguments.ProjectHours.Aggregate(0.0d, (sum, projectHour) => sum += projectHour.Value);
+        var projectSum = arguments.ProjectHoursDuringWorkday.Aggregate(0.0d, (sum, projectHour) => sum += projectHour.Value);
         var mainProjectHours = totalHours - projectSum;
         specifiedHours.Add(arguments.MainProjectLabel, mainProjectHours);
 

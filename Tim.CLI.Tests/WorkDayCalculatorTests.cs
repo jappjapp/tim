@@ -288,7 +288,8 @@ public class WorkDayCalculatorTests
             MainProjectLabel: mainProjectLabel,
             WorkDayHours: Constants.DefaultWorkDayHours,
             FlexHours: TimeSpan.Zero,
-            ProjectHours: new());
+            ProjectHoursDuringWorkday: new(),
+            ProjectHoursOutsideWorkday: new());
     }
 
     private static Arguments CreateArgsWithCustomWorkDayLength(string startTime, string endTime, double lunchHours, string mainProjectLabel, double workDayLength)
@@ -300,7 +301,8 @@ public class WorkDayCalculatorTests
             MainProjectLabel: mainProjectLabel,
             WorkDayHours: workDayLength,
             FlexHours: TimeSpan.Zero,
-            ProjectHours: new());
+            ProjectHoursDuringWorkday: new(),
+            ProjectHoursOutsideWorkday: new());
     }
 
     private static Arguments CreateArgsWithCustomWorkDayLengthAndFlex(string startTime, string endTime, double lunchHours, string mainProjectLabel, double workDayLength, double flexHours)
@@ -312,7 +314,8 @@ public class WorkDayCalculatorTests
             MainProjectLabel: mainProjectLabel,
             WorkDayHours: workDayLength,
             FlexHours: TimeSpan.FromHours(flexHours),
-            ProjectHours: new());
+            ProjectHoursDuringWorkday: new(),
+            ProjectHoursOutsideWorkday: new());
     }
 
     private static Arguments CreateArgsWithProjects(string startTime, string endTime, double lunchHours, string mainProjectLabel, Dictionary<string, double> projectHours)
@@ -324,6 +327,7 @@ public class WorkDayCalculatorTests
             MainProjectLabel: mainProjectLabel,
             WorkDayHours: Constants.DefaultWorkDayHours,
             FlexHours: TimeSpan.Zero,
-            ProjectHours: projectHours);
+            ProjectHoursDuringWorkday: projectHours,
+            ProjectHoursOutsideWorkday: new());
     }
 }
