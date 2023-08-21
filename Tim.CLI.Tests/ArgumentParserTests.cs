@@ -85,10 +85,10 @@ public class ArgumentParserTests
 
     #endregion FlexFlags
 
-    #region ProjectFlags
+    #region ProjectFlagsDuringWorkday
 
     [Test]
-    public void Parse_HandlesOneProjectFlag()
+    public void Parse_HandlesOneProjectFlagDuringWorkday()
     {
         var args = new string[] { "0800", "1700", "0.5", "Label", "--MockProject1", "2.75" }.ToImmutableArray();
 
@@ -103,7 +103,7 @@ public class ArgumentParserTests
     }
 
     [Test]
-    public void Parse_HandlesThreeProjectFlags()
+    public void Parse_HandlesThreeProjectFlagsDuringWorkday()
     {
         var args = new string[] { "0800", "1700", "0.5", "Label",
             "--MockProject1", "1.75",
@@ -128,7 +128,7 @@ public class ArgumentParserTests
     }
 
     [Test]
-    public void Parse_HandlesDuplicateProjectFlags()
+    public void Parse_HandlesDuplicateProjectFlagsDuringWorkday()
     {
         var args = new string[] { "0800", "1700", "0.5", "Label",
             "--MockProject1", "1.75",
@@ -149,7 +149,74 @@ public class ArgumentParserTests
         });
     }
 
-    #endregion ProjectFlags
+    #endregion ProjectFlagsDuringWorkday
+
+    #region ProjectFlagsOutsideWorkday
+
+    [Test]
+    public void Parse_HandlesOneProjectFlagOutsideWorkday()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label", "++MockProject1", "2.75" }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.ProjectHoursOutsideWorkday, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First().Key, Is.EqualTo("MockProject1"));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First().Value, Is.EqualTo(2.75));
+        });
+    }
+
+    [Test]
+    public void Parse_HandlesThreeProjectFlagsOutsideWorkday()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label",
+            "++MockProject1", "1.75",
+            "++MockProject2", "2.75",
+            "++MockProject3", "3.75"
+        }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.ProjectHoursOutsideWorkday, Has.Count.EqualTo(3));
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First().Key, Is.EqualTo("MockProject1"));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First().Value, Is.EqualTo(1.75));
+
+            Assert.That(arguments.ProjectHoursOutsideWorkday.Skip(1).First().Key, Is.EqualTo("MockProject2"));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.Skip(1).First().Value, Is.EqualTo(2.75));
+
+            Assert.That(arguments.ProjectHoursOutsideWorkday.Last().Key, Is.EqualTo("MockProject3"));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.Last().Value, Is.EqualTo(3.75));
+        });
+    }
+
+    [Test]
+    public void Parse_HandlesDuplicateProjectFlagsOutsideWorkday()
+    {
+        var args = new string[] { "0800", "1700", "0.5", "Label",
+            "++MockProject1", "1.75",
+            "++MockProject2", "2.75",
+            "++MockProject1", "-0.75"
+        }.ToImmutableArray();
+
+        var arguments = ArgumentHandler.Parse(args);
+
+        Assert.That(arguments.ProjectHoursOutsideWorkday, Has.Count.EqualTo(2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First().Key, Is.EqualTo("MockProject1"));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First().Value, Is.EqualTo(1));
+
+            Assert.That(arguments.ProjectHoursOutsideWorkday.Last().Key, Is.EqualTo("MockProject2"));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.Last().Value, Is.EqualTo(2.75));
+        });
+    }
+
+    #endregion ProjectFlagsProjectFlagsOutsideWorkday
+
 
     #region CombinedCases
 
@@ -167,7 +234,6 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesReadmeExample()
     {
-        // Take off: make this pass, investigate assertions, might be copypasted and in need of rewrite
         var args = new string[] { "0700", "1800", "0.5", "MainProject", "-f", "-1", "--OtherProject", "2.5", "++Training", "2", "++MainProject", "0.5", "-b", "7" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
@@ -180,10 +246,10 @@ public class ArgumentParserTests
             Assert.That(arguments.MainProjectLabel, Is.EqualTo("MainProject"));
             Assert.That(arguments.FlexHours, Is.EqualTo(TimeSpan.FromHours(-1.0)));
             Assert.That(arguments.WorkDayHours, Is.EqualTo(7.0));
-            Assert.That(arguments.ProjectHoursDuringWorkday, Has.Count.EqualTo(3));
+            Assert.That(arguments.ProjectHoursDuringWorkday, Has.Count.EqualTo(1));
             Assert.That(arguments.ProjectHoursDuringWorkday.First(x => x.Key == "OtherProject").Value, Is.EqualTo(2.5));
-            Assert.That(arguments.ProjectHoursDuringWorkday.First(x => x.Key == "Training").Value, Is.EqualTo(2));
-            Assert.That(arguments.ProjectHoursDuringWorkday.First(x => x.Key == "m").Value, Is.EqualTo(0.5));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First(x => x.Key == "Training").Value, Is.EqualTo(2));
+            Assert.That(arguments.ProjectHoursOutsideWorkday.First(x => x.Key == "MainProject").Value, Is.EqualTo(0.5));
         });
     }
 
