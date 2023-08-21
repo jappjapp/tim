@@ -42,6 +42,8 @@ namespace Tim.CLI.Business
 
             // only double dash, no project name
 
+            // No projects during workday with mainprojectlabel
+
             throw new NotImplementedException();
         }
 
