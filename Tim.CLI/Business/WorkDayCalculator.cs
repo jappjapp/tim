@@ -11,14 +11,14 @@ internal static class WorkDayCalculator
         var flex = totalHours - arguments.WorkDayHours;
         var specifiedHours = GetProjectHours(arguments, totalHours, hoursOutsideWorkday);
 
-        return new(totalHours, flex, specifiedHours);
+        return new(totalHours, flex, arguments.MainProjectLabel, specifiedHours);
     }
 
     internal static List<string> Validate(WorkDayCalcResult result)
     {
         // negative specifiedHours
 
-        throw new NotImplementedException();
+        return new();
     }
 
     private static Dictionary<string, double> GetProjectHours(Arguments arguments, double totalHours, TimeSpan projectHoursOutsideWorkday)

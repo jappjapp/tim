@@ -44,7 +44,7 @@ namespace Tim.CLI.Business
 
             // No projects during workday with mainprojectlabel
 
-            throw new NotImplementedException();
+            return new();
         }
 
         private static double GetArgumentValueOrDefault(string argumentFlag, double defaultValue, ImmutableArray<string> arguments)

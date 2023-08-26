@@ -331,10 +331,63 @@ public class WorkDayCalculatorTests
 
     #endregion ProjectsDuringWorkday
 
-    // CombinedCases
-    // Flex plus customwdaylength
-    // Flex plus flera projekt, inkl kasta om argument
-    // Flera project och customwdaylength
+    #region CombinedCases
+
+    [Test]
+    public void Calculate_CombinationOfAllArgsYieldCorrectHours()
+    {
+        var args = new Arguments(
+            Start: TimeOnly.Parse("07:00"),
+            End: TimeOnly.Parse("18:00"),
+            Lunch: TimeSpan.FromHours(0.5),
+            MainProjectLabel: "MainProject",
+            WorkDayHours: 7.0,
+            FlexHours: TimeSpan.FromHours(-1.0),
+            ProjectHoursDuringWorkday: new() { { "OtherProject", 2.5 } },
+            ProjectHoursOutsideWorkday: new() { { "Training", 2 }, { "MainProject", 0.5 } });
+
+        var workDayResult = WorkDayCalculator.Calculate(args);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(workDayResult.TotalHours, Is.EqualTo(12.0));
+            Assert.That(workDayResult.Flex, Is.EqualTo(5.0));
+            Assert.That(workDayResult.SpecifiedHours, Has.Count.EqualTo(3));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("MainProject")).Value, Is.EqualTo(7.5));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("OtherProject")).Value, Is.EqualTo(2.5));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("Training")).Value, Is.EqualTo(2.0));
+        });
+    }
+
+    [Test]
+    public void Calculate_CombinationOfMultipleArgsYieldCorrectHours()
+    {
+        var args = new Arguments(
+            Start: TimeOnly.Parse("07:00"),
+            End: TimeOnly.Parse("18:00"),
+            Lunch: TimeSpan.FromHours(0.5),
+            MainProjectLabel: "MainProject",
+            WorkDayHours: 7.0,
+            FlexHours: TimeSpan.FromHours(-1.0),
+            ProjectHoursDuringWorkday: new() { { "OtherProject1", 2.5 }, { "OtherProject2", 0.5 } },
+            ProjectHoursOutsideWorkday: new() { { "Training", 2 }, { "MainProject", 0.5 }, { "OtherProject1", 1 } });
+
+        var workDayResult = WorkDayCalculator.Calculate(args);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(workDayResult.TotalHours, Is.EqualTo(13.0));
+            Assert.That(workDayResult.Flex, Is.EqualTo(6.0));
+            Assert.That(workDayResult.SpecifiedHours, Has.Count.EqualTo(4));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("MainProject")).Value, Is.EqualTo(7));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("OtherProject1")).Value, Is.EqualTo(3.5));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("OtherProject2")).Value, Is.EqualTo(0.5));
+            Assert.That(workDayResult.SpecifiedHours.First(x => x.Key.Equals("Training")).Value, Is.EqualTo(2.0));
+        });
+    }
+
+    #endregion CombinedCases
+
 
     // Todo: move to own file
     [Test]
