@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using Tim.CLI.Models;
 
 namespace Tim.CLI.Business;
@@ -6,7 +7,13 @@ internal static class ResultFormatter
 {
     internal static string FormatErrorsToLineString(List<string> errors)
     {
-        throw new NotImplementedException();
+        StringBuilder sb = new();
+
+        sb.AppendLine("ERRORS:");
+
+        errors.ForEach(e => sb.AppendLine(e));
+
+        return sb.ToString();
     }
 
     internal static string FormatResultToLineString(WorkDayCalcResult result)

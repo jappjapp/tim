@@ -81,4 +81,16 @@ public class ResultFormatterTests
         Assert.That(formattedResult, Is.EqualTo("[ M 7.33 | OtherProject 1.33 | Flex in 1.67 | Total 9.67 ]"));
     }
 
+    [Test]
+    public void FormatErrors_YieldsLineBreaksAndHeading()
+    {
+        var errors = new List<string> { "error 1", "error 2" };
+
+        var formattedErrors = ResultFormatter.FormatErrorsToLineString(errors);
+
+        Assert.That(formattedErrors, Is.EqualTo("ERRORS:\r\n" +
+            "error 1\r\n" +
+            "error 2\r\n"));
+    }
+
 }
