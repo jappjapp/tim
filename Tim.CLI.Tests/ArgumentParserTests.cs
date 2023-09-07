@@ -8,7 +8,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesRequiredArgs()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -24,7 +24,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_ParsesWorkDayHours()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "-b", "7" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "-b", "7" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -34,7 +34,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_DefaultsToEightWorkDayHours()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -46,7 +46,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesOnePositiveFlex()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "-f", "0,75" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -56,7 +56,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesTwoPositiveFlex()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "0.5" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "-f", "0,75", "-f", "0,5" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -66,7 +66,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesTwoDifferentFlex()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "-0.5" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "-f", "0,75", "-f", "-0,5" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -76,7 +76,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesThreeDifferentFlex()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-f", "-0.5", "-f", "2" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "-f", "0,75", "-f", "-0,5", "-f", "2" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -90,7 +90,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesOneProjectFlagDuringWorkday()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "--MockProject1", "2.75" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "--MockProject1", "2,75" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -105,10 +105,10 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesThreeProjectFlagsDuringWorkday()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label",
-            "--MockProject1", "1.75",
-            "--MockProject2", "2.75",
-            "--MockProject3", "3.75"
+        var args = new string[] { "0800", "1700", "0,5", "Label",
+            "--MockProject1", "1,75",
+            "--MockProject2", "2,75",
+            "--MockProject3", "3,75"
         }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
@@ -130,10 +130,10 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesDuplicateProjectFlagsDuringWorkday()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label",
-            "--MockProject1", "1.75",
-            "--MockProject2", "2.75",
-            "--MockProject1", "-0.75"
+        var args = new string[] { "0800", "1700", "0,5", "Label",
+            "--MockProject1", "1,75",
+            "--MockProject2", "2,75",
+            "--MockProject1", "-0,75"
         }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
@@ -156,7 +156,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesOneProjectFlagOutsideWorkday()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "++MockProject1", "2.75" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "++MockProject1", "2,75" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -171,10 +171,10 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesThreeProjectFlagsOutsideWorkday()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label",
-            "++MockProject1", "1.75",
-            "++MockProject2", "2.75",
-            "++MockProject3", "3.75"
+        var args = new string[] { "0800", "1700", "0,5", "Label",
+            "++MockProject1", "1,75",
+            "++MockProject2", "2,75",
+            "++MockProject3", "3,75"
         }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
@@ -196,10 +196,10 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesDuplicateProjectFlagsOutsideWorkday()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label",
-            "++MockProject1", "1.75",
-            "++MockProject2", "2.75",
-            "++MockProject1", "-0.75"
+        var args = new string[] { "0800", "1700", "0,5", "Label",
+            "++MockProject1", "1,75",
+            "++MockProject2", "2,75",
+            "++MockProject1", "-0,75"
         }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
@@ -223,7 +223,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesFlexAndCustomWorkDayLength()
     {
-        var args = new string[] { "0800", "1700", "0.5", "Label", "-f", "0.75", "-b", "6", "-f", "-1.5" }.ToImmutableArray();
+        var args = new string[] { "0800", "1700", "0,5", "Label", "-f", "0,75", "-b", "6", "-f", "-1,5" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 
@@ -234,7 +234,7 @@ public class ArgumentParserTests
     [Test]
     public void Parse_HandlesReadmeExample()
     {
-        var args = new string[] { "0700", "1800", "0.5", "MainProject", "-f", "-1", "--OtherProject", "2.5", "++Training", "2", "++MainProject", "0.5", "-b", "7" }.ToImmutableArray();
+        var args = new string[] { "0700", "1800", "0,5", "MainProject", "-f", "-1", "--OtherProject", "2,5", "++Training", "2", "++MainProject", "0,5", "-b", "7" }.ToImmutableArray();
 
         var arguments = ArgumentHandler.Parse(args);
 

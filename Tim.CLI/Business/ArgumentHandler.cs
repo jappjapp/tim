@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Globalization;
 using Tim.CLI.Models;
 
 namespace Tim.CLI.Business
@@ -13,9 +14,11 @@ namespace Tim.CLI.Business
 
         internal static Arguments Parse(ImmutableArray<string> args)
         {
+            CultureInfo.CurrentCulture = new CultureInfo("sv-SE"); // Use comma decimals
+
             var start = TimeOnly.Parse(args[0].Insert(2, ":"));
             var end = TimeOnly.Parse(args[1].Insert(2, ":"));
-            var lunch = TimeSpan.FromHours(double.Parse(args[2].Replace(".", ",")));
+            var lunch = TimeSpan.FromHours(double.Parse(args[2]));
             var label = args[3];
 
             var workDayHours = GetArgumentValueOrDefault(WorkDayHoursFlag, DefaultWorkDayHours, args);
@@ -68,7 +71,7 @@ namespace Tim.CLI.Business
             {
                 var flexFlagIndex = mutableArgs.IndexOf(flexFlag);
 
-                flexHours += double.Parse(mutableArgs[flexFlagIndex + 1].Replace(".", ","));
+                flexHours += double.Parse(mutableArgs[flexFlagIndex + 1]);
 
                 mutableArgs.RemoveRange(flexFlagIndex, 2);
             }
@@ -85,7 +88,7 @@ namespace Tim.CLI.Business
             {
                 var projectIndex = mutableArgs.IndexOf(mutableArgs.First(a => a.StartsWith(projectFlagPrefix)));
                 var projectName = mutableArgs[projectIndex].Remove(0, projectFlagPrefix.Length);
-                var projectValue = double.Parse(mutableArgs[projectIndex + 1].Replace(".", ","));
+                var projectValue = double.Parse(mutableArgs[projectIndex + 1]);
 
                 if (!projectHours.TryAdd(projectName, projectValue))
                 {
