@@ -16,9 +16,22 @@ internal static class WorkDayCalculator
 
     internal static List<string> Validate(WorkDayCalcResult result)
     {
-        // negative specifiedHours
+        var validationResult = new List<string>();
 
-        return new();
+        if (result.TotalHours < 0)
+        {
+            validationResult.Add($"Total hours are negative: {result.TotalHours}");
+        }
+
+        foreach (var specifiedHour in result.SpecifiedHours)
+        {
+            if (specifiedHour.Value < 0)
+            {
+                validationResult.Add($"{specifiedHour.Key} has negative value: {specifiedHour.Value}");
+            }
+        }
+
+        return validationResult;
     }
 
     private static Dictionary<string, double> GetProjectHours(Arguments arguments, double totalHours, TimeSpan projectHoursOutsideWorkday)
