@@ -57,14 +57,14 @@ public class ResultFormatterTests
     public void FormatResult_FormatsProjectsAndFlex()
     {
         var result = new WorkDayCalcResult(
-            TotalHours: 9.0,
+            TotalHours: 9.5,
             MainProjectLabel: "M",
-            Flex: 1.0,
-            SpecifiedHours: new() { { "M", 7.5 }, { "OtherProject", 1.5 } });
+            Flex: 1.5,
+            SpecifiedHours: new() { { "M", 7.5 }, { "OtherProject", 1.5 }, { "OtherProject2", 0.5 } });
 
         var formattedResult = ResultFormatter.FormatResultToLineString(result);
 
-        Assert.That(formattedResult, Is.EqualTo("[ M 7.5 | OtherProject 1.5 | Flex in 1 | Total 9 ]"));
+        Assert.That(formattedResult, Is.EqualTo("[ M 7.5 | OtherProject 1.5 | OtherProject2 0.5 | Flex in 1.5 | Total 9.5 ]"));
     }
 
     [Test]
