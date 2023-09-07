@@ -50,8 +50,7 @@ public class ResultFormatterTests
 
         var formattedResult = ResultFormatter.FormatResultToLineString(result);
 
-        // Take off: find a better way to handle dotted decimals
-        Assert.That(formattedResult, Is.EqualTo("[ M 6,5 | OtherProject 1,5 | Total 8 ]"));
+        Assert.That(formattedResult, Is.EqualTo("[ M 6.5 | OtherProject 1.5 | Total 8 ]"));
     }
 
     [Test]
@@ -65,6 +64,21 @@ public class ResultFormatterTests
 
         var formattedResult = ResultFormatter.FormatResultToLineString(result);
 
-        Assert.That(formattedResult, Is.EqualTo("[ M 7,5 | OtherProject 1,5 | Flex in 1 | Total 9 ]"));
+        Assert.That(formattedResult, Is.EqualTo("[ M 7.5 | OtherProject 1.5 | Flex in 1 | Total 9 ]"));
     }
+
+    [Test]
+    public void FormatResult_RoundsAllDecimals()
+    {
+        var result = new WorkDayCalcResult(
+            TotalHours: 9.666,
+            MainProjectLabel: "M",
+            Flex: 1.666,
+            SpecifiedHours: new() { { "M", 7.333 }, { "OtherProject", 1.333 } });
+
+        var formattedResult = ResultFormatter.FormatResultToLineString(result);
+
+        Assert.That(formattedResult, Is.EqualTo("[ M 7.33 | OtherProject 1.33 | Flex in 1.67 | Total 9.67 ]"));
+    }
+
 }
