@@ -26,8 +26,8 @@ dotnet tool install --global --add-source ./nupkg Tim.CLI
 Once installed as a global tool, the program is executed by the name `tim` (as specified by the relevant csproj setting).
 
 ```
-$ tim 0700 1800 0.5 MainProject -f -1 --OtherProject 2.5 ++Training 2 ++MainProject 0.5 -b 7
-[12 T | MainProject 7.5 | OtherProject 2.5 | Training 2 | Flex 5 ]
+$ tim 0700 1800 0,5 MainProject -f -1 --OtherProject 2,5 ++Training 2 ++MainProject 0,5 -b 7
+[ MainProject 7.5 | OtherProject 2.5 | Training 2 | Flex in 5 | Total 12 ]
 ```
 
 Above means:
