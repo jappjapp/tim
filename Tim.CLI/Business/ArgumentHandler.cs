@@ -6,27 +6,21 @@ namespace Tim.CLI.Business
 {
     internal static class ArgumentHandler
     {
-        private const double DefaultWorkDayHours = 8.0;
-        private const string WorkDayHoursFlag = "-b";
-        private const string FlexFlag = "-f";
-        private const string ProjectsDuringWorkdayFlagPrefix = "--";
-        private const string ProjectsOutsideWorkdayFlagPrefix = "++";
-
         internal static Arguments Parse(ImmutableArray<string> args)
         {
             CultureInfo.CurrentCulture = new CultureInfo("sv-SE"); // Use comma decimals
 
-            var start = TimeOnly.Parse(args[0].Insert(2, ":"));
-            var end = TimeOnly.Parse(args[1].Insert(2, ":"));
+            var start = TimeOnly.Parse(ConvertToParsableTime(args[0]));
+            var end = TimeOnly.Parse(ConvertToParsableTime(args[1]));
             var lunch = TimeSpan.FromHours(double.Parse(args[2]));
             var label = args[3];
 
-            var workDayHours = GetArgumentValueOrDefault(WorkDayHoursFlag, DefaultWorkDayHours, args);
+            var workDayHours = GetArgumentValueOrDefault(Constants.WorkDayHoursFlag, Constants.DefaultWorkDayHours, args);
 
-            var flexHours = GetFlexHours(FlexFlag, args);
+            var flexHours = GetFlexHours(Constants.FlexFlag, args);
 
-            var projectHoursDuringWorkday = GetProjectHours(ProjectsDuringWorkdayFlagPrefix, args);
-            var projectHoursOutsideWorkday = GetProjectHours(ProjectsOutsideWorkdayFlagPrefix, args);
+            var projectHoursDuringWorkday = GetProjectHours(Constants.ProjectsDuringWorkdayFlagPrefix, args);
+            var projectHoursOutsideWorkday = GetProjectHours(Constants.ProjectsOutsideWorkdayFlagPrefix, args);
 
             return new(start, end, lunch, label, workDayHours, flexHours, projectHoursDuringWorkday, projectHoursOutsideWorkday);
         }
@@ -38,21 +32,93 @@ namespace Tim.CLI.Business
 
         internal static List<string> Validate(ImmutableArray<string> args)
         {
-            // Missing required
+            var errors = new List<string>();
 
-            // Double of unique, like base
+            // Missing required args
+            if (args.Length < Constants.NumberRequiredArgs)
+            {
+                errors.Add(Constants.ValidationError_TooFewArguments);
+            }
 
-            // Unknown parameters
+            // Start time
+            if (!TimeOnly.TryParse(ConvertToParsableTime(args[0]), out TimeOnly _))
+            {
+                errors.Add(Constants.ValidationError_MalformattedStartTime);
+            }
 
-            // Missing parameters (can't have two qualifiers or two datas in a row)
+            // End time
+            if (!TimeOnly.TryParse(ConvertToParsableTime(args[1]), out TimeOnly _))
+            {
+                errors.Add(Constants.ValidationError_MalformattedEndTime);
+            }
 
-            // Non-valid times
+            // Lunch duration
+            if (!double.TryParse(args[2], out double _))
+            {
+                errors.Add(Constants.ValidationError_MalformattedLunchDuration);
+            }
 
-            // only double dash, no project name
+            // More than one unique flag
+            if (args.Count(x => x.Equals(Constants.WorkDayHoursFlag)) > 1)
+            {
+                errors.Add(Constants.ValidationError_MoreThanOneWorkdayFlag);
+            }
 
-            // No projects during workday with mainprojectlabel
+            // Non-required args, validate syntax and data
+            var argValuePairs =
+                args.Length > Constants.NumberRequiredArgs ?
+                args.Skip(Constants.NumberRequiredArgs).ToList() :
+                new List<string>();
 
-            return new();
+            var hasEvenNumberNonRequiredArgs = argValuePairs.Count % 2 == 0;
+
+            if (!hasEvenNumberNonRequiredArgs)
+            {
+                errors.Add(Constants.ValidationError_InvalidNumberNonRequiredArgs);
+            }
+
+            while (hasEvenNumberNonRequiredArgs && argValuePairs.Count > 0)
+            {
+                var argValuePair = argValuePairs.Take(2).ToArray();
+                var arg = argValuePair[0];
+                var value = argValuePair[1];
+
+                if (!IsValidFlag(arg))
+                {
+                    errors.Add($"Argument '{arg}' does not seem to be a valid flag.");
+                    break; // Let user fix errors one at a time
+                }
+
+                if (!IsValidDuration(value))
+                {
+                    errors.Add($"Argument '{arg}' does not seem to have a valid value: '{value}'.");
+                    break; // Let user fix errors one at a time
+                }
+
+                argValuePairs.RemoveRange(0, 2);
+            }
+
+            return errors;
+        }
+
+        private static bool IsValidDuration(string argValue)
+        {
+            return double.TryParse(argValue, out double _);
+        }
+
+        private static bool IsValidFlag(string arg)
+        {
+            if (Constants.FlagPrefixes.Any(x => arg.StartsWith(x)) && arg.Length > 3)
+            {
+                return true;
+            }
+
+            if (Constants.Flags.Contains(arg))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static double GetArgumentValueOrDefault(string argumentFlag, double defaultValue, ImmutableArray<string> arguments)
@@ -104,7 +170,11 @@ namespace Tim.CLI.Business
             }
 
             return projectHours;
+        }
 
+        private static string ConvertToParsableTime(string arg)
+        {
+            return arg.Insert(2, ":");
         }
     }
 }
