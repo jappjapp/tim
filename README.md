@@ -19,6 +19,7 @@ To install a new version of the tool. (Keeping it as simple as possible. Not usi
 ```
 dotnet tool uninstall --global Tim.CLI
 cd Tim.CLI
+dotnet pack
 dotnet tool install --global --add-source ./nupkg Tim.CLI
 ```
 
