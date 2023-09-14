@@ -31,6 +31,11 @@ namespace Tim.CLI.Business
             return new(start, end, lunch, label, workDayHours, flexHours, projectHoursDuringWorkday, projectHoursOutsideWorkday);
         }
 
+        internal static bool IsHelpArgument(ImmutableArray<string> immutableArgs)
+        {
+            return immutableArgs.Length == 1 && immutableArgs[0].Equals(Constants.HelpArgument);
+        }
+
         internal static List<string> Validate(ImmutableArray<string> args)
         {
             // Missing required

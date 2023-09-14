@@ -8,6 +8,12 @@ public class Program
     {
         var immutableArgs = args.ToImmutableArray();
 
+        if (ArgumentHandler.IsHelpArgument(immutableArgs))
+        {
+            Console.WriteLine(ResultFormatter.GetHelpText());
+            return;
+        }
+
         var errors = ArgumentHandler.Validate(immutableArgs);
         if (errors.Any())
         {

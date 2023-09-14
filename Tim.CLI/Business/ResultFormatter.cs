@@ -45,6 +45,21 @@ internal static class ResultFormatter
         return $"[ {result.MainProjectLabel} {mainProjectHours} | {formattedProjectHours}{formattedFlexHours}Total {totalHours} ]";
     }
 
+    internal static string GetHelpText()
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("HELP:");
+        sb.AppendLine("Required args: 0800 1700 0,5 MainProject (start time, end time, lunch duration, project label)");
+        sb.AppendLine("Flex in: -f 1");
+        sb.AppendLine("Flex out: -f -2,5");
+        sb.AppendLine("Custom workday hours: -b 7,0");
+        sb.AppendLine("Project hours during workday: --ProjectLabel 3,5");
+        sb.AppendLine("Project hours after workday: ++ProjectLabel 2");
+
+        return sb.ToString();
+    }
+
     private static double Round(double value)
     {
         return Math.Round(value, 2);
